@@ -4,6 +4,9 @@
     "welcomeSubtitle": "Il s'agit d'une superbe application pour afficher une liste.",
     "userListNoUserFound": "Aucun utilisateur trouvé.",
     "userListRefresh": "Veuillez rafraîchir la page.",
+    "userListSearchHint": "Rechercher des utilisateurs...",
+    "userListNoSearchResults": "Aucun résultat trouvé pour votre recherche.",
+    "userListClearSearch": "Effacer la recherche pour voir tous les utilisateurs.",
     "navbarWelcome": "Accueil",
     "navbarUsers": "Utilisateurs"
 }

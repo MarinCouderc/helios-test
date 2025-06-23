@@ -27,25 +27,55 @@ class UserListPage extends StatefulWidget {
 
 class _UserListPageState extends State<UserListPage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
   final List<UserModel> _allUsers = [];
+  List<UserModel> _filteredUsers = [];
   int _currentPage = 1;
   bool _isLoadingMore = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
-    if (_isBottom && !_isLoadingMore) {
+    if (_isBottom && !_isLoadingMore && _searchQuery.isEmpty) {
       _loadMoreUsers();
+    }
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      _filterUsers();
+    });
+  }
+
+  void _filterUsers() {
+    if (_searchQuery.isEmpty) {
+      _filteredUsers = List.from(_allUsers);
+    } else {
+      _filteredUsers = _allUsers.where((user) {
+        final fullName = '${user.name.first} ${user.name.last}'.toLowerCase();
+        final email = user.email.toLowerCase();
+        final phone = user.phone.toLowerCase();
+        final gender = user.gender.toLowerCase();
+
+        return fullName.contains(_searchQuery) ||
+               email.contains(_searchQuery) ||
+               phone.contains(_searchQuery) ||
+               gender.contains(_searchQuery);
+      }).toList();
     }
   }
 
@@ -78,6 +108,7 @@ class _UserListPageState extends State<UserListPage> {
             onRefresh: () async {
               _currentPage = 1;
               _allUsers.clear();
+              _searchController.clear();
               await context.read<UserListCubit>().getUsers(1);
             },
             child: _buildBody(context, users),
@@ -90,8 +121,15 @@ class _UserListPageState extends State<UserListPage> {
 
   Widget _buildBody(BuildContext context, List<UserModel>? users) {
     if (users == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Column(
+        children: [
+          _buildSearchBar(),
+          const Expanded(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ],
       );
     }
 
@@ -105,11 +143,20 @@ class _UserListPageState extends State<UserListPage> {
       }
     }
 
-    if (_allUsers.isEmpty) {
-      return _buildEmptyWidget();
-    }
+    _filterUsers();
 
-    return _buildUserList();
+    return Column(
+      children: [
+        _buildSearchBar(),
+        Expanded(
+          child: _allUsers.isEmpty
+              ? _buildEmptyWidget()
+              : _filteredUsers.isEmpty && _searchQuery.isNotEmpty
+                  ? _buildNoSearchResultsWidget()
+                  : _buildUserList(),
+        ),
+      ],
+    );
   }
 
   Widget _buildEmptyWidget() {
@@ -147,16 +194,97 @@ class _UserListPageState extends State<UserListPage> {
     );
   }
 
+  Widget _buildSearchBar() {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: context.l10n.userListSearchHint,
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: _searchController.clear,
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: theme.colorScheme.outline.withValues(alpha: 0.5),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: theme.colorScheme.outline.withValues(alpha: 0.5),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: theme.colorScheme.primary,
+              width: 2,
+            ),
+          ),
+          filled: true,
+          fillColor: theme.colorScheme.surface,
+        ),
+      ),
+    );
+  }
+
   Widget _buildUserList() {
+    final displayUsers = _searchQuery.isEmpty ? _allUsers : _filteredUsers;
+    final showLoadingIndicator = _isLoadingMore && _searchQuery.isEmpty;
+
     return ListView.builder(
       controller: _scrollController,
-      itemCount: _isLoadingMore ? _allUsers.length + 1 : _allUsers.length,
+      itemCount: showLoadingIndicator ? displayUsers.length + 1 : displayUsers.length,
       itemBuilder: (context, index) {
-        if (index >= _allUsers.length) {
+        if (index >= displayUsers.length) {
           return _buildLoadingIndicator();
         }
-        return UserItemWidget(user: _allUsers[index]);
+        return UserItemWidget(user: displayUsers[index]);
       },
+    );
+  }
+
+  Widget _buildNoSearchResultsWidget() {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.userListNoSearchResults,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              context.l10n.userListClearSearch,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
