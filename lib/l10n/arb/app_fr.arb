@@ -1,5 +1,7 @@
 {
     "@@locale": "fr",
     "welcomeMessage": "Bienvenue !",
-    "welcomeSubtitle": "Il s'agit d'une superbe application pour afficher une liste."
+    "welcomeSubtitle": "Il s'agit d'une superbe application pour afficher une liste.",
+    "userListNoUserFound": "Aucun utilisateur trouvé.",
+    "userListRefresh": "Veuillez rafraîchir la page."
 }
