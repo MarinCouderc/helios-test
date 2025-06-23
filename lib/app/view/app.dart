@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:helios/counter/counter.dart';
 import 'package:helios/l10n/l10n.dart';
+import 'package:helios/welcome/view/welcome_view.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -10,7 +10,7 @@ class App extends StatelessWidget {
     return GoRouter(routes: <RouteBase>[
       GoRoute(
         path: '/',
-        builder: (context, state) => const CounterPage(),
+        builder: (context, state) => const WelcomeView(),
       ),
     ]);
   }
