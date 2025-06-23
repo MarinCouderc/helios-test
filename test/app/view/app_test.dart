@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:helios/app/app.dart';
-import 'package:helios/welcome/view/welcome_view.dart';
+import 'package:helios/app/welcome/view/welcome_view.dart';
 
 void main() {
   group('App', () {
