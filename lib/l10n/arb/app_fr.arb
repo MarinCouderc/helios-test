@@ -3,5 +3,7 @@
     "welcomeMessage": "Bienvenue !",
     "welcomeSubtitle": "Il s'agit d'une superbe application pour afficher une liste.",
     "userListNoUserFound": "Aucun utilisateur trouvé.",
-    "userListRefresh": "Veuillez rafraîchir la page."
+    "userListRefresh": "Veuillez rafraîchir la page.",
+    "navbarWelcome": "Accueil",
+    "navbarUsers": "Utilisateurs"
 }

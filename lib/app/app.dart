@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:helios/app/user-list/view/user_list_view.dart';
 import 'package:helios/app/welcome/view/welcome_view.dart';
 import 'package:helios/l10n/l10n.dart';
 
@@ -12,9 +13,13 @@ class App extends StatelessWidget {
         path: '/',
         builder: (context, state) => const WelcomeView(),
       ),
+      GoRoute(
+        path: '/user-list',
+        builder: (context, state) => const UserListView(),
+      ),
     ]);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

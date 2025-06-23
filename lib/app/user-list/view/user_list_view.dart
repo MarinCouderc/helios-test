@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:helios/app/shared/shared.dart';
 import 'package:helios/app/user-list/cubit/user_list_cubit.dart';
 import 'package:helios/app/user-list/model/user.dart';
 import 'package:helios/app/user-list/view/widgets/user_item_widget.dart';
@@ -83,6 +84,7 @@ class _UserListPageState extends State<UserListPage> {
           );
         },
       ),
+      bottomNavigationBar: const SimpleNavbar(),
     );
   }
 

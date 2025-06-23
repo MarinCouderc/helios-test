@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:helios/app/shared/shared.dart';
 import 'package:helios/l10n/l10n.dart';
 
 class WelcomeView extends StatelessWidget {
@@ -31,6 +32,7 @@ class WelcomeView extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const SimpleNavbar(),
     );
   }
 }
